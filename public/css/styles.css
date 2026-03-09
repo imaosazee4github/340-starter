@@ -247,7 +247,7 @@ footer a:hover {
     }
 }
 
-@media screen and (min-width: 1024ppx) {
+@media screen and (min-width: 1024px) {
    .upgrades-grid {
         grid-template-columns: repeat(4, 1fr);
     }
