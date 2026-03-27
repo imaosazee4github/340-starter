@@ -1,4 +1,4 @@
-const pool = require("../database/")
+const Pool = require("../database/index")
 
 
 /* 
@@ -6,7 +6,7 @@ const pool = require("../database/")
 */
 
 async function getClassifications(){
-    return await pool.query("SELECT * FROM public.classification ORDER BY classification_name")
+    return await Pool.query("SELECT * FROM public.classification ORDER BY classification_name")
 }
 
 module.exports = {getClassifications}
