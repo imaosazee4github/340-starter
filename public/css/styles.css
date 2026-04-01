@@ -88,11 +88,12 @@ h1, h2{
   display: flex;
   flex-direction: column;
   gap: 20px;
-  padding: 20px;
 }
 
 .vehicle-image img {
   width: 100%;
+  max-width: 500px;
+  height: auto;
   border-radius: 10px;
 }
 
@@ -124,16 +125,53 @@ nav {
     background-color: #1e1e1e; 
     padding: 10px 20px;
 }
+.nav-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
+.menu-toggle {
+  font-size: 1.8rem;
+  color: #fff;
+  cursor: pointer;
+  display: block;
+}
+
+#nav-list {
+  display: none;
+  flex-direction: column;
+  background-color: #1e1e1e;
+  width: 100%;
+  margin-top: 10px;
+}
+
+#nav-list.active {
+  display: flex;
+}
 
 nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: none;              /* hidden by default */
+  flex-direction: column;     /* stack vertically */
+  background-color: #1e1e1e;
+  width: 100%;
+}
+
+nav ul.active {
+  display: flex;
+}
+
+
+/* nav ul {
+    display: flex;
     list-style: none;
     padding: 0;
-    margin: 0;
-    display: flex;        
-    flex-direction: row;  
+    margin: 0; 
     justify-content: space-around; 
-}
+} */
 
 
 nav ul li {
@@ -211,16 +249,36 @@ footer a:hover {
 }
 
 @media screen and (min-width: 768px) {
-    .vehicle-detail {
+      nav ul {
+    display: flex;
     flex-direction: row;
+    justify-content: flex-start;
+  }
+  .vehicle-detail{
+    flex-direction: row;;
   }
 
-   .vehicle-image {
+  .menu-toggle {
+    display: none; /* hide hamburger */
+  }
+
+   #nav-list {
+    display: flex !important;
+    flex-direction: row;
+    justify-content: space-around;
+    background: none;
+  }
+
+   .vehicle-image,
+   .vehicle-info {
     width: 50%;
   }
 
     .vehicle-info {
-    width: 50%;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        width: 100%;
   }
    .reviews ul li {
         font-size: 1.1rem; /* Slightly bigger for desktop */
@@ -243,9 +301,21 @@ footer a:hover {
     #top-header #tools a {
         padding: 7px 15px; 
     }
-   nav ul {
-        justify-content: flex-start; 
+    /* nav ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: none;
+        width: 100%;
     }
+
+    nav ul.active {
+        display: flex;
+    } */
+
+   /* nav ul {
+        justify-content: flex-start; 
+    } */
 
     nav ul li {
         margin-right: 30px; 
@@ -309,10 +379,10 @@ img{
 
 /* **************************** */
  
-    .home-content {
-        display: flex;
-        gap: 2rem;
-        justify-content: space-between;
+.home-content {
+    display: flex;
+    gap: 2rem;
+    justify-content: space-between;
     }
 
     .reviews, .upgrades {
