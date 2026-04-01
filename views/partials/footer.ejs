@@ -1,6 +1,18 @@
 <% const d = new Date()
- let year = d.getFullYear() %>
- <footer>
-    <p class="copyright"> &copy; <%= year %>, CSE 340 App | Site Plan by Osazee Imadonmwinyi</p>
- </footer>
+const year = d.getFullYear() %>
 
+<footer>
+  <div class="footer-content">
+    
+    <p class="copyright">
+      &copy; <%= year %>, CSE 340 App | Site Plan by Osazee Imadonmwinyi
+    </p>
+
+    <p class="footer-links">
+      <a href="/inv/error" title="Trigger a server error for testing">
+        Trigger Error
+      </a>
+    </p>
+
+  </div>
+</footer>
