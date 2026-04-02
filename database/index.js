@@ -40,7 +40,7 @@ const pool = new Pool({
     rejectUnauthorized: false,
   },
 })
-
+console.log("✅ USING CORRECT DB CONNECTION FILE")
 module.exports = {
   query: (text, params) => pool.query(text, params),
 }
