@@ -154,8 +154,8 @@ nav ul {
   list-style: none;
   padding: 0;
   margin: 0;
-  display: none;              /* hidden by default */
-  flex-direction: column;     /* stack vertically */
+  display: none;             
+  flex-direction: column;    
   background-color: #1e1e1e;
   width: 100%;
 }
@@ -164,14 +164,6 @@ nav ul.active {
   display: flex;
 }
 
-
-/* nav ul {
-    display: flex;
-    list-style: none;
-    padding: 0;
-    margin: 0; 
-    justify-content: space-around; 
-} */
 
 
 nav ul li {
@@ -259,7 +251,7 @@ footer a:hover {
   }
 
   .menu-toggle {
-    display: none; /* hide hamburger */
+    display: none; 
   }
 
    #nav-list {
@@ -281,7 +273,7 @@ footer a:hover {
         width: 100%;
   }
    .reviews ul li {
-        font-size: 1.1rem; /* Slightly bigger for desktop */
+        font-size: 1.1rem; 
     }
     .upgrades {
         font-size: 1.05rem; 
@@ -301,22 +293,7 @@ footer a:hover {
     #top-header #tools a {
         padding: 7px 15px; 
     }
-    /* nav ul {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-        display: none;
-        width: 100%;
-    }
-
-    nav ul.active {
-        display: flex;
-    } */
-
-   /* nav ul {
-        justify-content: flex-start; 
-    } */
-
+    
     nav ul li {
         margin-right: 30px; 
     }
