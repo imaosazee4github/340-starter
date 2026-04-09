@@ -4,11 +4,17 @@ const invModel = require("../models/inventory-model")
 const baseController = {}
 
 baseController.buildHome = async function(req, res) {
-    // const nav = await utilities.getNav()
-    res.locals.nav = await utilities.getNav() 
-    res.render("index", {title: "Home"})
-}
+    try{
+    nav = await utilities.getNav() 
+    req.flash("notice", "This is a flash message.")
 
+   
+    res.render("index", 
+        {title: "Home",nav})
+} catch(error) {
+next(error)
+}
+}
 
 module.exports = baseController
 

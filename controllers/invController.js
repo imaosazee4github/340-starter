@@ -12,14 +12,13 @@ invCont.buildByClassificationId = async function (req, res, next) {
   try {
     const classification_id = parseInt(req.params.classificationId)
     const data = await invModel.getInventoryByClassificationId(classification_id)
-    const nav = await utilities.getNav()
+    // const nav = await utilities.getNav()
 
 // prevent or handle crash
     if (!data || data.length === 0){
       return res.status(404).render("errors/error", {
         title: "No Vehicles Found",
         message: "Sorry, no vehicles found for this classification.",
-        nav
       })
     }
     const grid = await utilities.buildClassificationGrid(data)
@@ -27,12 +26,10 @@ invCont.buildByClassificationId = async function (req, res, next) {
 
     res.render("./inventory/classification", {
       title: `${className} Vehicles`,
-      nav,
       grid
     })
 
   }catch(error){
-    console.error("buildByClassificationId errors:", error)
     next(error)
   }
 }
@@ -43,8 +40,15 @@ invCont.buildByInventoryId = async function (req, res, next){
   try {
     const inv_id = parseInt(req.params.inv_id)
 
+    if (isNaN(inv_id)) {
+      return res.status(400).render("errors/error", {
+        title: "Invalid ID",
+        message: "Invalid vehicle ID provided."
+      })
+    }
     const data = await invModel.getInventoryById(inv_id)
-    const nav = await utilities.getNav()
+
+    // const nav = await utilities.getNav()
     if(!data) {
       return res.status(404).render("errors/error", {
         title: "Vehicle Not Found",

@@ -4,3 +4,4 @@ const nav = document.getElementById("nav-list")
 toggle.addEventListener("click", () => {
     nav.classList.toggle("active")
 })
+
