@@ -49,7 +49,7 @@ h1, h2{
     margin-top: 0.5rem;
     padding: 0.5rem 1rem;
     background-color: #1e1e1e;
-    color: rgb(223, 220, 220);
+    color: #eee;
     border-radius: 5px;
     font-weight: bold;
 }
@@ -221,6 +221,10 @@ nav ul li:hover {
     border: 1px solid #ffcc00;  
     border-radius: 5px;
     transition: all 0.3s ease;
+}
+
+nav a{
+  color: white;
 }
 
 #top-header #tools a:hover {
