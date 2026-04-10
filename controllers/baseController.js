@@ -3,14 +3,9 @@ const invModel = require("../models/inventory-model")
 
 const baseController = {}
 
-baseController.buildHome = async function(req, res) {
+baseController.buildHome = async function(req, res, next) {
     try{
-    nav = await utilities.getNav() 
-    req.flash("notice", "This is a flash message.")
-
-   
-    res.render("index", 
-        {title: "Home",nav})
+    const nav = await utilities.getNav() 
 } catch(error) {
 next(error)
 }
