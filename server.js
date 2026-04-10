@@ -69,6 +69,12 @@ app.get("/", baseController.buildHome)
 /* ***********************
  * Error Handlers
  *************************/
+app.use((req, res, next) => {
+  res.status(404).render("errors/error", {
+    title: "404 Not Found",
+    message: "Sorry, the requested page was not found."
+  })
+})
 app.use((err, req, res, next) => {
   console.error("SERVER ERROR:", err.message)
 
