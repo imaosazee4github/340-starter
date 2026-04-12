@@ -4,7 +4,7 @@ const Util = {}
 Util.getNav = async function () {
     try {
         let data = await invModel.getClassifications()
-        list = ""
+        let list = ""
 
         // let list = "<ul>"
         list += '<li><a href="/">Home</a></li>'
