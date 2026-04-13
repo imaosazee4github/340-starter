@@ -31,6 +31,38 @@ Util.getNav = async function () {
 /* **************************************
 * Build the classification view HTML
 * ************************************ */
+Util.buildClassificationList = async function (classification_id = null) {
+  try {
+    let data = await invModel.getClassifications()
+    let list = '<select name="classification_id" id="classificationList" required>'
+    list += "<option value=''>Choose a Classification</option>"
+
+    // Check if data is an array (success case) or has rows property (error case)
+    let classifications = Array.isArray(data) ? data : (data.rows || [])
+    
+    if (classifications.length > 0) {
+      classifications.forEach(row => {
+        list += `<option value="${row.classification_id}"`
+        
+        if (classification_id == row.classification_id) {
+          list += " selected"
+        }
+
+        list += `>${row.classification_name}</option>`
+      })
+    } else {
+      list += "<option value=''>No classifications available</option>"
+    }
+
+    list += "</select>"
+    return list
+  } catch (error) {
+    console.error("Error building classification list:", error)
+    return '<select name="classification_id" required><option value="">Error loading classifications</option></select>'
+  }
+}
+
+
 Util.buildClassificationGrid = async function(data){
   let grid=""
 

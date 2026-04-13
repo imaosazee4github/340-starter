@@ -76,4 +76,156 @@ invCont.triggerError = async function(req, res, next) {
   }
 }
 
-module.exports = invCont
+async function buildManagement(req, res, next){
+  try{
+    let nav = await utilities.getNav()
+
+    res.render("inventory/management", {
+      title :"Inventory/management",
+      nav,
+    })
+  }catch(error){
+    next(error)
+  }
+}
+
+async function buildAddClassification(req, res, next) {
+  try {
+    let nav = await utilities.getNav()
+    res.render("inventory/add-classification", {
+      title: "Add Classification",
+      nav,
+      errors: null,
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+async function addClassification(req, res, next){
+  try{
+    let nav = await utilities.getNav()
+    const {classification_name} = req.body
+
+    const result = await invModel.addClassification(classification_name)
+
+    // Check if result has rowCount or if it's an error message
+    if (result && result.rowCount > 0) {
+      req.flash("notice", "Classification added successfully.")
+      return res.redirect("/inv")  // Use redirect, not render
+    } else {
+      req.flash("notice", "Failed to add classification. Classification may already exist.")
+      return res.render("inventory/add-classification", {
+        title: "Add Classification",
+        nav,
+        errors: [{ msg: result || "Database error" }],
+        classification_name,
+      })
+    }
+  }catch(error){
+    next(error)
+  }
+}
+
+
+async function buildAddInventory(req, res, next) {
+  try {
+    console.log('=== buildAddInventory called ===')
+    let nav = await utilities.getNav()
+    let classificationList = await utilities.buildClassificationList()
+
+    res.render("inventory/add-inventory", {
+      title: "Add Inventory",
+      nav,
+      classificationList,
+      errors: [],  // Pass empty array, NOT null
+      inv_make: '',
+      inv_model: '',
+      inv_year: '',
+      inv_description: '',
+      inv_image: '/images/vehicles/no-image.png',
+      inv_thumbnail: '/images/vehicles/no-image-tn.png',
+      inv_price: '',
+      inv_miles: '',
+      inv_color: ''
+    })
+  } catch (error) {
+    console.error('Error in buildAddInventory:', error)
+    next(error)
+  }
+}
+
+async function addInventory(req, res, next) {
+  try {
+    let nav = await utilities.getNav()
+
+    const {
+      inv_make,
+      inv_model,
+      inv_year,
+      inv_description,
+      inv_image,
+      inv_thumbnail,
+      inv_price,
+      inv_miles,
+      inv_color,
+      classification_id,
+    } = req.body
+
+    const result = await invModel.addInventory(
+      inv_make,
+      inv_model,
+      inv_year,
+      inv_description,
+      inv_image,
+      inv_thumbnail,
+      inv_price,
+      inv_miles,
+      inv_color,
+      classification_id
+    )
+
+    // Check if result has rowCount (successful insert)
+    if (result && result.rowCount > 0) {
+      req.flash("notice", "Vehicle added successfully.")
+      return res.redirect("/inv")  // Use redirect to management view
+    } else {
+      req.flash("notice", "Failed to add vehicle. Please try again.")
+      let classificationList = await utilities.buildClassificationList(classification_id)
+      
+      // Re-render form with entered data
+      return res.render("inventory/add-inventory", {
+        title: "Add Inventory",
+        nav,
+        classificationList,
+        errors: [{ msg: result || "Database error - could not add vehicle" }],
+        inv_make,
+        inv_model,
+        inv_year,
+        inv_description,
+        inv_image,
+        inv_thumbnail,
+        inv_price,
+        inv_miles,
+        inv_color,
+        classification_id
+      })
+    }
+
+  } catch (error) {
+    console.error("Error in addInventory:", error)
+    req.flash("notice", "An error occurred while adding the vehicle.")
+    next(error)
+  }
+}
+
+module.exports = {
+  buildByClassificationId: invCont.buildByClassificationId,
+  buildByInventoryId: invCont.buildByInventoryId,
+  triggerError: invCont.triggerError,
+  buildManagement,
+  buildAddClassification,
+  addClassification,
+  buildAddInventory,
+  addInventory
+}

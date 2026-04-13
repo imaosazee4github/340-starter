@@ -11,11 +11,11 @@ const expressLayouts = require("express-ejs-layouts")
 const static = require("./routes/static")
 const baseController = require("./controllers/baseController")
 const utilities = require("./utilities")
-const inventoryRoute = require("./routes/inventoryRoute")
 const session = require("express-session")
 const pool = require('./database/index')
 const accountRoute = require("./routes/accountRoute")
 const bodyParser = require("body-parser")
+const invRoute = require("./routes/invRoute")
 
 
 
@@ -68,11 +68,11 @@ app.use(express.static("public"))
 /* ***********************
  * Routes
  *************************/
-
-app.use("/inv", inventoryRoute)
+app.get("/", baseController.buildHome)
+app.use("/inv", invRoute)
 app.use("/account", accountRoute)
 app.use(static)
-app.get("/", baseController.buildHome)
+
 
 /* ***********************
  * Error Handlers
