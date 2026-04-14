@@ -2,62 +2,57 @@ const utilities = require("../utilities/")
 const accountModel = require("../models/account-model")
 const bcrypt = require("bcryptjs")
 
-// login user controller
+const accountController = {}
 
-async function buildLogin(req, res, next) {
+// Login user controller
+accountController.buildLogin = async function(req, res, next) {
     try {
         let nav = await utilities.getNav()
-
         res.render("account/login", {
             title: "Login",
             nav,
+            errors: null,
+            account_email: ""
         })
-    }catch(error) {
+    } catch(error) {
         next(error)
     }
 }
 
 // Register user controller
-async function buildRegister(req, res, next) {
+accountController.buildRegister = async function(req, res, next) {
     try {
         let nav = await utilities.getNav()
         res.render("account/register", {
             title: "Register",
             nav,
             errors: null,
-            account_firstname:"",
-            account_lastname:"",
-            account_email:"",
-        
+            account_firstname: "",
+            account_lastname: "",
+            account_email: ""
         })
-
-    }catch(error){
+    } catch(error) {
         next(error)
     }
 }
 
-async function registerAccount(req, res, next){
-    try{
-        let nav = await utilities.getNav()
+// Process registration
+accountController.registerAccount = async function(req, res, next) {
+    let nav = await utilities.getNav()
+    
+    const {
+        account_firstname,
+        account_lastname,
+        account_email,
+        account_password
+    } = req.body
 
-        const {
-            account_firstname,
-            account_lastname,
-            account_email,
-            account_password
-        }= req.body
+    try {
+        // Hash the password - FIXED: Use bcrypt.hashSync correctly
+        const salt = bcrypt.genSaltSync(10)
+        const hashedPassword = bcrypt.hashSync(account_password, salt)
 
-        let hashedPassword
-        try{
-             let hashedPassword = bcrypt.hashSync(hashedPassword, 10)
-        }catch(error){
-            req.flash("notice", "Sorry, there was an error processing the registeration.")
-            return res.status(500).render("account/register", {
-                title: "Registration",
-                nav,
-                errors: null
-            })
-        }
+        // Register the account
         const regResult = await accountModel.registerAccount(
             account_firstname,
             account_lastname,
@@ -65,34 +60,33 @@ async function registerAccount(req, res, next){
             hashedPassword
         )
 
-        if (regResult) {
-            req.flash(
-                "notice",
-                `Congratulation, you're registered ${account_firstname}. Please log in.`
-            )
-            return res.status(201).render("account/login", {
-                title: "Login",
-                nav,
-            })
-        }else {
-            req.flash("notice", "Sorry, the registeration failed.")
-            return res.status(501).render("account/register", {
+        if (regResult && regResult.rowCount > 0) {
+            req.flash("notice", `Congratulations ${account_firstname}, you're registered! Please log in.`)
+            return res.redirect("/account/login")  // Use redirect, not render
+        } else {
+            req.flash("notice", "Sorry, the registration failed. Please try again.")
+            return res.render("account/register", {
                 title: "Register",
                 nav,
+                errors: [{ msg: "Registration failed. Please try again." }],
                 account_firstname,
                 account_lastname,
-                account_email,
+                account_email
             })
         }
-    }catch(error){
+    } catch(error) {
         console.error("Register Error:", error)
-
-        req.flash("notice", "An unexpected error occurred.")
-        return res.status(500).render("account/register", {
+        
+        req.flash("notice", "An unexpected error occurred during registration.")
+        return res.render("account/register", {
             title: "Register",
-            nav: await utilities.getNav(),
+            nav,
+            errors: [{ msg: error.message || "Registration failed. Please try again." }],
+            account_firstname,
+            account_lastname,
+            account_email
         })
     }
 }
 
-module.exports = {buildLogin, buildRegister, registerAccount}
+module.exports = accountController

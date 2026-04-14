@@ -67,6 +67,15 @@ h1, h2{
     margin-top: 0.5rem;
 }
 
+.management-links {
+  display: flex;
+  gap: 20px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+
+
 .flash-message ul {
   list-style: none;
   padding: 0;
