@@ -6,15 +6,24 @@ const accountController = require("../controllers/accountController")
 
 const router = new express.Router()
 
-// Get login view
-router.get("/login", utilities.handleErrors(accountController.buildLogin))
+// router.get("/", utilities.handleErrors(accountController.buildAccountManagement))
+router.get(
+  "/",
+  utilities.checkLogin,
+  utilities.handleErrors(accountController.buildAccountManagement)
+)
 
+router.get("/login", utilities.handleErrors(accountController.buildLogin))
 router.get("/register", utilities.handleErrors(accountController.buildRegister))
+
+// Get login view
+router.post(
+    "/login",
+    regValidate.loginRules(),
+    regValidate.checkLoginData,
+    utilities.handleErrors(accountController.accountLogin))
 
 router.post("/register", regValidate.registationRules(), regValidate.checkRegData, utilities.handleErrors(accountController.registerAccount))
 
-router.post("/login", (req, res) => {
-    res.status(200).send("login process")
-})
 
 module.exports = router

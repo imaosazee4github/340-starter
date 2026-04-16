@@ -15,6 +15,7 @@ const session = require("express-session")
 const pool = require('./database/index')
 const accountRoute = require("./routes/accountRoute")
 const bodyParser = require("body-parser")
+const cookieParser = require("cookie-parser")
 const invRoute = require("./routes/invRoute")
 
 
@@ -34,6 +35,8 @@ app.set("layout", "./layouts/layout")
      MIDDLEWARE
  *************************/
 app.use(bodyParser.json())
+app.use(cookieParser())
+app.use(utilities.checkJWTToken)
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(async(req, res,  next) => {
   try{

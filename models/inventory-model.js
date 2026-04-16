@@ -4,7 +4,6 @@ const pool = require("../database/index")
 /* 
  * Get all classification data
 */
-
 async function getClassifications(){
     try{
         const data = await pool.query(
@@ -34,6 +33,7 @@ async function getInventoryByClassificationId(classification_id) {
     return data.rows
   } catch (error) {
     console.error("getclassificationsbyid error " + error)
+    return []
   }
 }
 
@@ -47,6 +47,7 @@ async function getInventoryById(inv_id){
     return data.rows[0]
   }catch (error){
     console.error("getInventoryById error" + error)
+    return null
   }
 }
 
@@ -129,7 +130,56 @@ async function addInventory(
     return result  // Return the full result object with rowCount
   } catch (error) {
     console.error("Error in addInventory:", error)
-    return { rowCount: 0, error: error.message }  // Return consistent object
+    return { rowCount: 0, error: error.message}  // Return consistent object
   }
 }
-module.exports = {getClassifications, getInventoryByClassificationId, getInventoryById, addClassification, addInventory}
+
+async function updateInventory(
+  inv_id,
+  inv_make,
+  inv_model,
+  inv_year,
+  inv_description,
+  inv_image,
+  inv_thumbnail,
+  inv_price,
+  inv_miles,
+  inv_color,
+  classification_id
+){
+  try {
+    const sql =`
+    UPDATE public.inventory
+    SET inv_make = $1,
+          inv_model = $2,
+          inv_year = $3,
+          inv_description = $4,
+          inv_image = $5,
+          inv_thumbnail = $6,
+          inv_price = $7,
+          inv_miles = $8,
+          inv_color = $9,
+          classification_id = $10
+      WHERE inv_id = $11
+      RETURNING *;
+    `
+    const result = await pool.query(sql, [
+      inv_make,
+      inv_model,
+      inv_year,
+      inv_description,
+      inv_image,
+      inv_thumbnail,
+      inv_price,
+      inv_miles,
+      inv_color,
+      classification_id,
+      inv_id
+    ])
+    return result
+  }catch(error){
+    console.error("updateInventory error:", error)
+    return {rowCount: 0, error: error.message}
+  }
+}
+module.exports = {getClassifications, getInventoryByClassificationId, getInventoryById, addClassification, addInventory, updateInventory}

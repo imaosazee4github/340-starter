@@ -1,4 +1,6 @@
 const invModel = require("../models/inventory-model")
+const jwt = require("jsonwebtoken")
+require("dotenv").config()
 const Util = {}
 
 Util.getNav = async function () {
@@ -99,6 +101,28 @@ Util.buildClassificationGrid = async function(data){
   return grid
 }
 
+Util.checkJWTToken = (req, res, next) => {
+  if (req.cookies.jwt) {
+    jwt.verify(
+      req.cookies.jwt,
+      process.env.ACCESS_TOKEN_SECRET,
+      function (err, accountData) {
+        if (err) {
+          req.flash("notice", "Please log in")
+          res.clearCookie("jwt")
+          return res.redirect("/account/login")
+        }
+            res.locals.accountData = accountData
+        res.locals.loggedin = 1
+        next()
+      }
+    )
+  } else {
+    next()
+  }
+}
+
+
 Util.buildVehicleDetail = async function(vehicle) {
   const miles = new Intl.NumberFormat("en-US").format(vehicle.inv_miles)
   const price = new Intl.NumberFormat("en-US", {
@@ -130,6 +154,15 @@ Util.buildVehicleDetail = async function(vehicle) {
   </div>
   `
   return detail
+}
+
+Util.checkLogin = (req, res, next) => {
+  if(res.locals.loggedin) {
+    next()
+  }else{
+    req.flash("notice", "Please log in.")
+    return res.redirect("/account/login")
+  }
 }
 
 Util.handleErrors = (fn) => (req, res, next) => 

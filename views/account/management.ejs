@@ -1,0 +1,22 @@
+<h1><%= title %></h1>
+
+<% if (messages && messages.length) { %>
+    <div class="flash-message">
+        <%= messages %>
+    </div>
+<% } %>
+
+<p>You're logged in!</p>
+
+<div class="account-info">
+    <h2>Account Information</h2>
+    <% if (accountData) { %>
+        <p><strong>Name:</strong> <%= accountData.account_firstname %> <%= accountData.account_lastname %></p>
+        <p><strong>Email:</strong> <%= accountData.account_email %></p>
+        <p><strong>Account Type:</strong> <%= accountData.account_type %></p>
+    <% } else {%>
+        <p>Account Information not available.</p>
+        <% } %>
+</div>
+
+<a href="/account/logout" class="logout-btn">Logout</a>

@@ -44,24 +44,22 @@ validate.inventoryRules = () => {
   ]
 }
 
+
 validate.checkInventoryData = async (req, res, next) => {
-  console.log('=== checkInventoryData called ===')
   const result = validationResult(req)
   
   if (!result.isEmpty()) {
-    console.log('Validation failed - errors found')
-    const errorsArray = result.array()
-    console.log('Errors:', errorsArray)
+
     
     let nav = await utilities.getNav()
     let classificationList = await utilities.buildClassificationList(req.body.classification_id)
     
-    // ALWAYS pass errors as an array
+//     // ALWAYS pass errors as an array
     return res.render("inventory/add-inventory", {
       title: "Add Inventory",
       nav,
       classificationList,
-      errors: errorsArray,  // Must be an array
+      errors: result.array(),  // Must be an array
       inv_make: req.body.inv_make || '',
       inv_model: req.body.inv_model || '',
       inv_year: req.body.inv_year || '',
@@ -75,8 +73,38 @@ validate.checkInventoryData = async (req, res, next) => {
     })
   }
   
-  console.log('Validation passed - no errors')
   next()
 }
+
+validate.checkUpdateData = async (req, res, next) => {
+  const result = validationResult(req)
+
+  if (!result.isEmpty()) {
+    let nav = await utilities.getNav()
+    let classificationList = await utilities.buildClassificationList(req.body.classification_id)
+
+     return res.render("inventory/edit-inventory", {
+      title: "Edit Vehicle",
+      nav,
+      classificationList,
+      errors: result.array(),
+
+
+      inv_id: req.body.inv_id,
+
+      inv_make: req.body.inv_make || '',
+      inv_model: req.body.inv_model || '',
+      inv_year: req.body.inv_year || '',
+      inv_description: req.body.inv_description || '',
+      inv_image: req.body.inv_image || '/images/vehicles/no-image.png',
+      inv_thumbnail: req.body.inv_thumbnail || '/images/vehicles/no-image-tn.png',
+      inv_price: req.body.inv_price || '',
+      inv_miles: req.body.inv_miles || '',
+      inv_color: req.body.inv_color || '',
+      classification_id: req.body.classification_id || ''
+     })
+    }
+    next()
+  }
 
 module.exports = validate

@@ -52,7 +52,7 @@ validate.checkRegData = async(req, res, next) => {
     const errors = validationResult(req)
 
     if (!errors.isEmpty()) {
-        let = await utilities.getNav()
+        let nav = await utilities.getNav()
 
         return res.render("account/register", {
             title: "Registration",
@@ -65,4 +65,43 @@ validate.checkRegData = async(req, res, next) => {
     }
     next()
 }
+
+// login data validatinrules
+validate.loginRules = () => {
+    return [
+        // Email
+        body("account_email")
+           .trim()
+           .escape()
+           .notEmpty()
+           .isEmail()
+           .normalizeEmail()
+           .withMessage("A valid email is required."),
+
+        // Password
+            body("account_password")
+            .trim()
+            .notEmpty()
+            .withMessage("Password is required."),
+    ]
+}
+
+// check login data and return errors
+validate.checkLoginData = async (req, res, next) => {
+    const { account_email } = req.body
+
+    const errors = validationResult(req)
+
+    if (!errors.isEmpty()) {
+        let nav = await utilities.getNav()
+         return res.render("account/login", {
+            title: "Login",
+            nav,
+            errors: errors.array(),
+            account_email,  
+        })
+    }
+    next()
+}
+
 module.exports = validate
