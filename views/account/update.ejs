@@ -1,0 +1,77 @@
+<h1><%= title %></h1>
+
+<% if (messages && messages.length) { %>
+    <div class="flash-message">
+        <%= messages %>
+    </div>
+<% } %>
+
+<% if (errors && errors.length) { %>
+    <div class="error-messages">
+        <ul>
+            <% errors.forEach(error => { %>
+                <li><%= error.msg || error %></li>
+            <% }) %>
+        </ul>
+    </div>
+<% } %>
+
+<!-- Form 1: Account Update -->
+<h2>Update Account Information</h2>
+<form action="/account/update-info" method="POST" onsubmit="return validateAccountForm()">
+    <input type="hidden" name="account_id" value="<%= accountData.account_id %>">
+    
+    <label for="firstname">First Name:</label>
+    <input type="text" 
+           id="firstname" 
+           name="firstname" 
+           value="<%= accountData.account_firstname %>" 
+           required>
+    <br><br>
+    
+    <label for="lastname">Last Name:</label>
+    <input type="text" 
+           id="lastname" 
+           name="lastname" 
+           value="<%= accountData.account_lastname %>" 
+           required>
+    <br><br>
+    
+    <label for="email">Email:</label>
+    <input type="email" 
+           id="email" 
+           name="email" 
+           value="<%= accountData.account_email %>" 
+           required>
+    <br><br>
+    
+    <input type="submit" value="Update Account">
+</form>
+
+<hr>
+
+<!-- Form 2: Change Password -->
+<h2>Change Password</h2>
+<form action="/account/change-password" method="POST" onsubmit="return validatePasswordForm()">
+    <input type="hidden" name="account_id" value="<%= accountData.account_id %>">
+    
+    <label for="password">New Password:</label>
+    <input type="password" 
+           id="password" 
+           name="password" 
+           required>
+    <br>
+    <small>Password must be at least 12 characters with at least 1 uppercase, 1 lowercase, 1 number, and 1 symbol.</small>
+    <br><br>
+    
+    <label for="confirm_password">Confirm Password:</label>
+    <input type="password" 
+           id="confirm_password" 
+           name="confirm_password" 
+           required>
+    <br><br>
+    
+    <input type="submit" value="Change Password">
+</form>
+
+<script src="../../public/js/update.js"></script>

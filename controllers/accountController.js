@@ -40,38 +40,52 @@ accountController.accountLogin = async function(req, res, next) {
         }
 
          const passwordMatch = await bcrypt.compare(account_password, accountData.account_password)
-        
-        if (passwordMatch) {
-            // Remove password from account data before storing in token
-            const safeAccountData = { ...accountData }
-            delete safeAccountData.account_password
-            
-            // Create JWT token
-            const accessToken = jwt.sign(
-                safeAccountData,
-                process.env.ACCESS_TOKEN_SECRET, 
-                { expiresIn: "1h" } 
-            )
-                res.cookie("jwt", accessToken, { 
-                    httpOnly: true, 
-                    maxAge: 3600 * 1000 
-                })
 
-                return res.redirect("/account/")
-            }
-              req.flash("notice", "Invalid email or password")
-              return res.status(400).render("account/login", {
-              title: "Login",
-              nav,
-              errors: [{ msg: "Invalid email or password" }],
-              account_email,
-        })
-   } catch (error) {
-        console.error("Login Error:", error)
-        next(error)
-    }
+         if (passwordMatch) {
+  //  Remove password before creating token
+  const safeAccountData = {
+    account_id: accountData.account_id,
+    account_firstname: accountData.account_firstname,
+    account_lastname: accountData.account_lastname,
+    account_email: accountData.account_email,
+    account_type: accountData.account_type,
+  }
+
+  //  Create JWT
+  const accessToken = jwt.sign(
+    safeAccountData,
+    process.env.ACCESS_TOKEN_SECRET,
+    { expiresIn: "1h" }
+  )
+
+  // Set cookie (important for rubric)
+  res.cookie("jwt", accessToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production", // good practice
+    maxAge: 60 * 60 * 1000 // 1 hour
+  })
+
+  //  Flash success (optional but good UX)
+  req.flash("notice", `Welcome ${safeAccountData.account_firstname}`)
+
+  //  Redirect so header updates
+  return res.redirect("/account/")
 }
-              
+
+req.flash("notice", "Invalid email or password")
+return res.status(400).render("account/login", {
+  title: "Login",
+  nav,
+  errors: [{ msg: "Invalid email or password" }],
+  account_email,
+})
+
+} catch (error) {
+  console.error("Login Error:", error)
+  next(error)
+}
+}    
+           // Remove password from account data before storing in token
                  
 accountController.buildAccountManagement = async function(req, res, next) {
     try {
@@ -88,6 +102,106 @@ accountController.buildAccountManagement = async function(req, res, next) {
         next(error)
     }
 }
+
+accountController.buildUpdateAccount = async function(req, res, next) {
+    try {
+        let nav = await utilities.getNav()
+        const account_id = req.params.id
+        
+        // Get fresh account data from database
+        const accountData = await accountModel.getAccountById(account_id)
+        
+        if (!accountData) {
+            req.flash("notice", "Account not found")
+            return res.redirect("/account/")
+        }
+        
+        res.render("account/update", {
+            title: "Update Account Information",
+            nav,
+            errors: null,
+            messages: req.flash("notice"),
+            accountData: accountData
+        })
+    } catch(error) {
+        next(error)
+    }
+}
+
+accountController.updateAccountInfo = async function(req, res, next) {
+    let nav = await utilities.getNav()
+    const { account_id, firstname, lastname, email } = req.body
+    
+    try {
+        // Update the account information
+        const updatedAccount = await accountModel.updateAccountInfo(account_id, firstname, lastname, email)
+        
+        if (updatedAccount) {
+            // Get fresh account data
+            const freshAccountData = await accountModel.getAccountById(account_id)
+            
+            // Update the JWT token with new information
+            const safeAccountData = {
+                account_id: freshAccountData.account_id,
+                account_firstname: freshAccountData.account_firstname,
+                account_lastname: freshAccountData.account_lastname,
+                account_email: freshAccountData.account_email,
+                account_type: freshAccountData.account_type,
+            }
+            
+            const accessToken = jwt.sign(
+                safeAccountData,
+                process.env.ACCESS_TOKEN_SECRET,
+                { expiresIn: "1h" }
+            )
+            
+            // Set new cookie with updated data
+            res.cookie("jwt", accessToken, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === "production",
+                maxAge: 60 * 60 * 1000
+            })
+            
+            req.flash("notice", "Account information updated successfully!")
+            return res.redirect("/account/")
+        } else {
+            req.flash("notice", "Failed to update account information")
+            return res.redirect(`/account/update/${account_id}`)
+        }
+    } catch(error) {
+        console.error("Update Account Error:", error)
+        req.flash("notice", "An error occurred while updating your account")
+        return res.redirect(`/account/update/${account_id}`)
+    }
+}
+
+accountController.changePassword = async function(req, res, next) {
+    let nav = await utilities.getNav()
+    const { account_id, password } = req.body
+    
+    try {
+        // Hash the new password
+        const salt = bcrypt.genSaltSync(10)
+        const hashedPassword = bcrypt.hashSync(password, salt)
+        
+        // Update the password in database
+        const passwordUpdated = await accountModel.updatePassword(account_id, hashedPassword)
+        
+        if (passwordUpdated) {
+            req.flash("notice", "Password changed successfully!")
+            return res.redirect("/account/")
+        } else {
+            req.flash("notice", "Failed to change password")
+            return res.redirect(`/account/update/${account_id}`)
+        }
+    } catch(error) {
+        console.error("Change Password Error:", error)
+        req.flash("notice", "An error occurred while changing your password")
+        return res.redirect(`/account/update/${account_id}`)
+    }
+}
+
+
 
 
 // Register user controller

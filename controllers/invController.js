@@ -341,6 +341,57 @@ async function updateInventory(req, res, next) {
   }
 }
 
+invCont.buildDeleteView = async function (req, res, next) {
+  try {
+    const inv_id = parseInt(req.params.inv_id)
+
+    let nav = await utilities.getNav()
+
+    const itemData = await invModel.getInventoryById(inv_id)
+
+    if (!itemData) {
+      req.flash("notice", "Vehicle not found.")
+      return res.redirect("/inv")
+    }
+
+    const itemName = `${itemData.inv_make} ${itemData.inv_model}`
+
+    res.render("./inventory/delete-confirm", {
+      title: "Delete " + itemName,
+      nav,
+      errors: null,
+      inv_id: itemData.inv_id,
+      inv_make: itemData.inv_make,
+      inv_model: itemData.inv_model,
+      inv_year: itemData.inv_year,
+      inv_price: itemData.inv_price,
+      classification_id: itemData.classification_id
+    })
+
+  } catch (error) {
+    next(error)
+  }
+}
+
+invCont.deleteInventory = async function (req, res, next) {
+  try {
+    const inv_id = parseInt(req.body.inv_id)
+
+    const result = await invModel.deleteInventoryItem(inv_id)
+
+    if (result.rowCount > 0) {
+      req.flash("notice", "Vehicle deleted successfully.")
+      return res.redirect("/inv")
+    } else {
+      req.flash("notice", "Delete failed.")
+      return res.redirect(`/inv/delete/${inv_id}`)
+    }
+
+  } catch (error) {
+    next(error)
+  }
+}
+
 module.exports = {
   buildByClassificationId: invCont.buildByClassificationId,
   buildByInventoryId: invCont.buildByInventoryId,
@@ -352,5 +403,7 @@ module.exports = {
   buildAddInventory,
   addInventory,
   updateInventory,
-  editInventoryView: invCont.editInventoryView
+  editInventoryView: invCont.editInventoryView,
+  buildDeleteView:invCont.buildDeleteView,
+  deleteInventory:invCont.deleteInventory
 }

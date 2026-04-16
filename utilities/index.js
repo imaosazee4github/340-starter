@@ -108,16 +108,19 @@ Util.checkJWTToken = (req, res, next) => {
       process.env.ACCESS_TOKEN_SECRET,
       function (err, accountData) {
         if (err) {
-          req.flash("notice", "Please log in")
+          res.locals.loggedIn = false
+          res.locals.accountData = null
           res.clearCookie("jwt")
-          return res.redirect("/account/login")
+          return next()
         }
-            res.locals.accountData = accountData
-        res.locals.loggedin = 1
+          res.locals.loggedIn = true
+          res.locals.accountData = accountData
         next()
       }
     )
   } else {
+    res.locals.loggedIn = false
+    res.locals.accountData = null
     next()
   }
 }
@@ -163,6 +166,19 @@ Util.checkLogin = (req, res, next) => {
     req.flash("notice", "Please log in.")
     return res.redirect("/account/login")
   }
+}
+
+Util.checkEmployeeOrAdmin = (req, res, next) => {
+  if (res.locals.loggedin && res.locals.accountData) {
+    const accountType = res.locals.accountData.account_type
+
+    if (accountType === "Employee" || accountType === "Admin") {
+      return next()
+    }
+  }
+
+  req.flash("notice", "Please log in as an Employee or Admin to access this page.")
+  return res.redirect("/account/login")
 }
 
 Util.handleErrors = (fn) => (req, res, next) => 

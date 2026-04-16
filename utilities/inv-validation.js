@@ -7,9 +7,9 @@ validate.classificationRules = () => {
     return [
         body("classification_name")
         .trim()
-        .notEmpty()
-        .isAlphanumeric()
-        .withMessage("Classification name must not contain spaces or special characters.")
+        .notEmpty().withMessage('Classification name is required')
+        .isLength({min: 3}).withMessage('Classification name must be at least 3 characters')
+        .matches(/^[a-zA-Z0-9]+$/).withMessage("Classification name must not contain only letters and numbers.")
     ]
 }
 

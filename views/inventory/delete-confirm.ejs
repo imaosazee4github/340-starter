@@ -1,0 +1,18 @@
+<h1><%= title %></h1>
+
+<%- messages() %>
+
+<p><strong>Confirm Deletion - This action cannot be undone.</strong></p>
+
+<ul>
+  <li><strong>Make:</strong> <%= inv_make %></li>
+  <li><strong>Model:</strong> <%= inv_model %></li>
+  <li><strong>Year:</strong> <%= inv_year %></li>
+  <li><strong>Price:</strong> $<%= inv_price %></li>
+</ul>
+
+<form action="/inv/delete" method="post">
+  <input type="hidden" name="inv_id" value="<%= inv_id %>">
+
+  <button type="submit">Delete Vehicle</button>
+</form>

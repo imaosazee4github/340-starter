@@ -21,7 +21,7 @@ if (errors) {
   </ul>
 <% } %>
 
-<form action="/inv/update" method="post">
+<form action="/inv/update" method="post" id="updateForm">
 
   
   <input type="hidden" name="inv_id" value="<%= inv_id %>">
@@ -90,3 +90,5 @@ if (errors) {
 <% } %>>
 
 </form>
+
+<script src="../../public/js/inv-update.js"></script>
